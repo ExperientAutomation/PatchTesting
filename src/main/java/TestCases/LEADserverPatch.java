@@ -1,8 +1,6 @@
 package TestCases;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
@@ -10,8 +8,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterSuite;
+import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Test;
 
 import CustomReporter.emailReportLead;
@@ -23,20 +21,24 @@ public class LEADserverPatch extends BrowserFactory {
 
 	// Declare the Test type as Pre OR Post
 //	 public final String testType = "Pre-Test";
-	public final String testType = "Post-Test";
+	public final String testType = "Post-Test";	 
 
 	// Declare the column for ShowCode
 	int showCodeColumn = 5;
 
 	// Declare the column for Link
 	int LinkColumn = 3;
+		
+	public static int row = 0;
+	public static int column = 0;
 	
 	WebDriverWait wait;
 	
-	int row = 0;
-	int column = 0;
+	/*public int getRow() {
+		return row;
+	}*/
 
-	@BeforeClass
+	@BeforeSuite
 	public int getColumn() {
 
 		if (testType.equals("Pre-Test")) {
@@ -47,44 +49,7 @@ public class LEADserverPatch extends BrowserFactory {
 		return column;
 	}
 
-	// This method validates various errors on the page
-	public void testErrorOnPage(WebDriver ldriver, int lrow) throws Exception {
-
-		if (ldriver.getCurrentUrl().toLowerCase().contains("error")) {
-			Thread.sleep(1000);
-			System.out.println("Failed");
-			xls.setCellData("Prod Servers", column, lrow, "Failed");
-			xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
-			xls.setCellData("Prod Servers", column + 1, lrow, "Our Apology Page appeared");
-
-		} else if (ldriver.getTitle().toLowerCase().contains("403")) {
-			Thread.sleep(1000);
-			System.out.println("Failed");
-			xls.setCellData("Prod Servers", column, lrow, "Failed");
-			xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
-			xls.setCellData("Prod Servers", column + 1, lrow, "Error 403 was occured");
-
-		} else if (ldriver.getTitle().toLowerCase().contains("404")) {
-			Thread.sleep(1000);
-			System.out.println("Failed");
-			xls.setCellData("Prod Servers", column, lrow, "Failed");
-			xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
-			xls.setCellData("Prod Servers", column + 1, lrow, "Error 404 was occured");
-
-//		} else if (ldriver.findElements(By.xpath("//*[starts-with(@*,'error')]")).size() > 0) {
-//			Thread.sleep(1000);
-//			System.out.println("Failed");
-//			xls.setCellData("Prod Servers", column, lrow, "Failed");
-//			xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
-//			xls.setCellData("Prod Servers", column + 1, lrow, "The Page was not loaded Or there is Error on page");
-//
-//		} else {
-			Thread.sleep(1000);
-			xls.setCellData("Prod Servers", column, lrow, "Pass");
-			xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
-		}
-
-	}
+	
 
 	@Test(priority = 0, enabled = true)
 	public void executeRow2to9() throws Exception {
@@ -99,11 +64,10 @@ public class LEADserverPatch extends BrowserFactory {
 			System.out.println("Starting execution row number " + row);
 			String linkToTest = xls.getCellData("Prod Servers", LinkColumn, row);
 			driver = BrowserFactory.getBrowser("Chrome");
-			driver.manage().window().maximize();
+			
 			System.out.println("URL-"+linkToTest);
 			driver.get(linkToTest);
-
-			driver.manage().timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+			
 			testErrorOnPage(driver, row);
 			System.out.println("Executed row number " + row);
 		}
@@ -113,7 +77,6 @@ public class LEADserverPatch extends BrowserFactory {
 	@Test(priority = 1, enabled = true)
 	public void executeRow10to13() throws Exception {
 			
-
 		for (row = 10; row <= 13; row++) {
 
 			System.out.println("Starting execution row number " + row);
@@ -140,7 +103,7 @@ public class LEADserverPatch extends BrowserFactory {
 			driver.get(url);
 			Thread.sleep(2000);
 
-			wait = new WebDriverWait(driver, 120);
+			wait = new WebDriverWait(driver, 60);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ContentPlaceHolder1_TextBoxShowCode")));
 
 			String showCode = xls.getCellData("Prod Servers", showCodeColumn, row);
@@ -164,11 +127,10 @@ public class LEADserverPatch extends BrowserFactory {
 			System.out.println("Starting execution row number " + row);
 			String linkToTest = xls.getCellData("Prod Servers", LinkColumn, row);
 			driver = BrowserFactory.getBrowser("Chrome");
-			driver.get(linkToTest);
-			driver.manage().window().maximize();
-			driver.manage().timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+			driver.get(linkToTest);			
+			
 
-			wait = new WebDriverWait(driver, 120);
+			wait = new WebDriverWait(driver, 60);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(
 					By.xpath("//label[contains(text(),' I have reviewed, understand, and accept')]")));
 
@@ -184,7 +146,7 @@ public class LEADserverPatch extends BrowserFactory {
 
 	@Test(priority = 4, enabled = true)
 	public void executeRow18to21() throws Exception {
-
+	
 		for (row = 18; row <= 21; row++) {
 
 			System.out.println("Starting execution row number " + row);
@@ -193,11 +155,9 @@ public class LEADserverPatch extends BrowserFactory {
 			StringBuffer allErrors = new StringBuffer();
 
 			driver = BrowserFactory.getBrowser("Chrome");
-			driver.get(linkToTest);
-			driver.manage().window().maximize();
-			driver.manage().timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+			driver.get(linkToTest);			
 
-			wait = new WebDriverWait(driver, 120);
+			wait = new WebDriverWait(driver, 60);
 			wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Guide']")));
 
 			// Testing all the tabs under Guide tab
@@ -210,11 +170,11 @@ public class LEADserverPatch extends BrowserFactory {
 					list11.get(i).click();
 					Thread.sleep(500);
 
-					if (driver.getCurrentUrl().toLowerCase().contains("error")) {
+					if (driver.getCurrentUrl().toLowerCase().contains("Error")) {
 
 						System.out.println("Failed to load " + errorTabName);
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						fail++;
 
@@ -222,7 +182,7 @@ public class LEADserverPatch extends BrowserFactory {
 
 						System.out.println("Failed to load " + errorTabName);
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						fail++;
 
@@ -230,15 +190,25 @@ public class LEADserverPatch extends BrowserFactory {
 
 						System.out.println("Failed to load " + errorTabName);
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						fail++;
 
-					} /*else if (driver.findElements(By.xpath("//*[starts-with(@*,'error')]")).size() > 0) {
+					} else if (driver.getTitle().toLowerCase().contains("error")) {
 
 						System.out.println("Failed to load " + errorTabName);
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
+						allErrors.append("Failed to load " + errorTabName + "\n");
+						fail++;
+
+					} 
+					
+					/*else if (driver.findElements(By.xpath("//*[starts-with(@*,'error')]")).size() > 0) {
+
+						System.out.println("Failed to load " + errorTabName);
+						driver.navigate().back();
+						
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						fail++;
 					}*/
@@ -267,7 +237,7 @@ public class LEADserverPatch extends BrowserFactory {
 						System.out.println("Failed to load " + errorTabName);
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						fail++;
 
 					} else if (driver.getTitle().toLowerCase().contains("403")) {
@@ -275,23 +245,23 @@ public class LEADserverPatch extends BrowserFactory {
 						System.out.println("Failed to load " + errorTabName);
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						fail++;
 
 					} else if (driver.getTitle().toLowerCase().contains("404")) {
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						System.out.println("Failed to load " + errorTabName);
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						fail++;
 
-					} /*else if (driver.findElements(By.xpath("//*[starts-with(@*,'error')]")).size() > 0) {
+					} else if (driver.getTitle().toLowerCase().contains("error")) {
 						System.out.println("Failed to load " + errorTabName);
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						fail++;
-					}*/
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -316,7 +286,7 @@ public class LEADserverPatch extends BrowserFactory {
 						System.out.println("Failed to load " + errorTabName);
 						driver.navigate().back();
 						allErrors.append("Failed to load " + errorTabName + "\n");
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						fail++;
 
 					} else if (driver.getTitle().toLowerCase().contains("403")) {
@@ -324,25 +294,25 @@ public class LEADserverPatch extends BrowserFactory {
 						System.out.println("Failed to load " + errorTabName);
 						driver.navigate().back();
 						allErrors.append("Failed to load " + errorTabName + "\n");
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						fail++;
 
 					} else if (driver.getTitle().toLowerCase().contains("404")) {
 
 						System.out.println("Failed to load " + errorTabName);
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						fail++;
 
-					} /*else if (driver.findElements(By.xpath("//*[starts-with(@*,'error')]")).size() > 0) {
+					} else if (driver.getTitle().toLowerCase().contains("error")) {
 
 						System.out.println("Failed to load " + errorTabName);
 						driver.navigate().back();
-						driver.manage().timeouts().pageLoadTimeout(60, TimeUnit.SECONDS);
+						
 						allErrors.append("Failed to load " + errorTabName + "\n");
 						fail++;
-					}*/
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -377,9 +347,7 @@ public class LEADserverPatch extends BrowserFactory {
 			String linkToTest = xls.getCellData("Prod Servers", LinkColumn, row);
 
 			driver = BrowserFactory.getBrowser("Chrome");
-			driver.get(linkToTest);
-			driver.manage().window().maximize();
-			driver.manage().timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+			driver.get(linkToTest);				
 
 			testErrorOnPage(driver, row);
 			System.out.println("Executed row number " + row);
@@ -405,13 +373,13 @@ public class LEADserverPatch extends BrowserFactory {
 			 System.out.println("URL:"+linkToTest);
 			 
 			 driver = BrowserFactory.getBrowser("Chrome");
-			 driver.get(linkToTest); driver.manage().window().maximize();
-			 driver.manage().timeouts().implicitlyWait(120, TimeUnit.SECONDS);
+			 driver.get(linkToTest); 
+			 
 			 driver.get(linkToTest);*/
 
 //			Calling Chrome browser to add Multi pass extension 
 			driver = BrowserFactory.getBrowser("ChromeOptions"); 
-			wait = new WebDriverWait(driver, 120);
+			wait = new WebDriverWait(driver, 60);
 			
 			driver.get("chrome-extension://enhldmjbphoeibbpdhmjkchohnidgnah/options.html");
 			driver.findElement(By.id("url")).sendKeys(url);
@@ -427,10 +395,10 @@ public class LEADserverPatch extends BrowserFactory {
 			driver.findElement(By.id("TextBoxShowCode")).sendKeys(showCode, Keys.ENTER);
 			wait.until(ExpectedConditions.presenceOfElementLocated(By.id("TextBoxShowCode")));
 
-//			testErrorOnPage(driver, row);
+			testErrorOnPage(driver, row);
 			System.out.println("Executed row number " + row);
 		}
-
+			driver.close();
 	}
 
 	@Test(priority = 6, enabled = true)
@@ -443,8 +411,8 @@ public class LEADserverPatch extends BrowserFactory {
 
 			driver = BrowserFactory.getBrowser("Chrome");
 			driver.get(linkToTest);
-			driver.manage().window().maximize();
-			driver.manage().timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+			
+			
 
 			testErrorOnPage(driver, row);
 			System.out.println("Executed row number " + row);
@@ -461,9 +429,7 @@ public class LEADserverPatch extends BrowserFactory {
 			String linkToTest = xls.getCellData("Prod Servers", LinkColumn, row);
 
 			driver = BrowserFactory.getBrowser("Chrome");
-			driver.get(linkToTest);
-			driver.manage().window().maximize();
-			driver.manage().timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+			driver.get(linkToTest);				
 
 			wait = new WebDriverWait(driver, 60);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("ContentMain_TextBoxActCode")));
@@ -491,9 +457,7 @@ public class LEADserverPatch extends BrowserFactory {
 			String linkToTest = xls.getCellData("Prod Servers", LinkColumn, row);
 
 			driver = BrowserFactory.getBrowser("Chrome");
-			driver.get(linkToTest);
-			driver.manage().window().maximize();
-			driver.manage().timeouts().pageLoadTimeout(120, TimeUnit.SECONDS);
+			driver.get(linkToTest);					
 
 			wait = new WebDriverWait(driver, 60);
 			wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("MainContent_TextBoxActivationCode_zip")));
@@ -509,9 +473,48 @@ public class LEADserverPatch extends BrowserFactory {
 		}
 
 	}
+	
+	// This method validates various errors on the page
+		public void testErrorOnPage(WebDriver ldriver, int lrow) throws Exception {
 
-	@AfterTest()
-	public void tearDown() {
+			if (ldriver.getCurrentUrl().toLowerCase().contains("error")) {
+				Thread.sleep(1000);
+				System.out.println("Failed");
+				xls.setCellData("Prod Servers", column, lrow, "Failed");
+				xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
+				xls.setCellData("Prod Servers", column + 1, lrow, "Our Apology Page appeared");
+
+			} else if (ldriver.getTitle().toLowerCase().contains("403")) {
+				Thread.sleep(1000);
+				System.out.println("Failed");
+				xls.setCellData("Prod Servers", column, lrow, "Failed");
+				xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
+				xls.setCellData("Prod Servers", column + 1, lrow, "Error 403 was occured");
+
+			} else if (ldriver.getTitle().toLowerCase().contains("404")) {
+				Thread.sleep(1000);
+				System.out.println("Failed");
+				xls.setCellData("Prod Servers", column, lrow, "Failed");
+				xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
+				xls.setCellData("Prod Servers", column + 1, lrow, "Error 404 was occured");
+
+			} /*else if (ldriver.findElements(By.xpath("//*[starts-with(@*,'error')]")).size() > 0) {
+				Thread.sleep(1000);
+				System.out.println("Failed");
+				xls.setCellData("Prod Servers", column, lrow, "Failed");
+				xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
+				xls.setCellData("Prod Servers", column + 1, lrow, "The Page was not loaded Or there is Error on page");
+
+			}*/ else {
+				Thread.sleep(1000);
+				xls.setCellData("Prod Servers", column, lrow, "Pass");
+				xls.setCellData("Prod Servers", column - 1, lrow, System.getProperty("user.name"));
+			}
+
+		}
+
+	@AfterSuite
+	public void tearDown() throws Exception {		
 		driver.quit();
 	}
 

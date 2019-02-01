@@ -60,12 +60,12 @@ public class BrowserFactory {
 				break;
 			case "Chrome":
 				driver = drivers.get("Chrome");
-//				if (driver == null) {
+				if (driver == null) {
 					System.setProperty("webdriver.chrome.driver", config.getChromePath());
 					driver = new ChromeDriver();
 					drivers.put("Chrome", driver);
 					driver.manage().window().maximize();
-//				}
+				}
 				break;
 
 			case "ChromeOptions":
